@@ -1,0 +1,4 @@
+Method,Name,Error,Occurrences
+GET,GET /api/user/all,"ConnectionRefusedError(10061, '[WinError 10061] Nenhuma conexão pôde ser feita porque a máquina de destino as recusou ativamente.')",1249
+POST,/auth/login,"ConnectionRefusedError(10061, '[WinError 10061] Nenhuma conexão pôde ser feita porque a máquina de destino as recusou ativamente.')",3827
+POST,POST /api/user/create,CatchResponseError('Status 0'),483
