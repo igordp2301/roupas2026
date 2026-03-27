@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.unilopers.roupas.async.InstallmentPaymentAsyncService;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
@@ -20,11 +20,13 @@ public class OrderController {
 
     private final OrderRepository orderRepository;
     private final OrderAsyncService orderAsyncService;
+    private final InstallmentPaymentAsyncService installmentPaymentAsyncService;
 
     @Autowired
-    public OrderController(OrderRepository orderRepository, OrderAsyncService orderAsyncService) {
+    public OrderController(OrderRepository orderRepository, OrderAsyncService orderAsyncService, InstallmentPaymentAsyncService installmentPaymentAsyncService) {
         this.orderRepository = orderRepository;
         this.orderAsyncService = orderAsyncService;
+        this.installmentPaymentAsyncService = installmentPaymentAsyncService;
     }
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
@@ -37,7 +39,8 @@ public class OrderController {
 
             Orders entity = orderRepository.save(order);
             orderAsyncService.processOrderAsync(entity.getOrderId());
-
+            installmentPaymentAsyncService.generateInstallmentsAsync(entity.getOrderId());
+            
             URI uri = URI.create("/api/order/" + entity.getOrderId());
             return ResponseEntity.created(uri).body(entity);
         } catch (Exception e) {
